@@ -1,7 +1,7 @@
-﻿using MVCAssignmentsOne.Repository;
-using MVCAssignmentsOne.Service;
+using MVCAssignmentThree.Repository;
+using MVCAssignmentThree.Service;
 
-namespace MVCAssignments
+namespace MVCAssignmentThree
 {
     public class Program
     {
@@ -9,20 +9,23 @@ namespace MVCAssignments
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container
+            // Add services to the container.
             builder.Services.AddControllersWithViews();
+            //register all custom service like connectionString,repository,services
 
-            //  Register your services (Dependency Injection)
-            builder.Services.AddScoped<IPatientService, PatientServiceImpl>();
-            builder.Services.AddScoped<IPatientRepository, PatientRepositoryImpl>();
+            //1 - add connection string
+            var connectionString = builder.Configuration.GetConnectionString("MVCConnectionString");
 
-            // Read connection string from appsettings.json
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            // Register DI for your repositories and services
+            builder.Services.AddScoped<IUserRepository, UserRepositoryImpl>();
+            builder.Services.AddScoped<IUserService, UserServiceImpl>();
+
+            // Add configuration access (to read connection strings)
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
             var app = builder.Build();
 
-            // ⚙️ Configure the HTTP request pipeline
+            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -33,11 +36,13 @@ namespace MVCAssignments
             app.UseStaticFiles();
 
             app.UseRouting();
+
             app.UseAuthorization();
 
+            // Default route
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Patient}/{action=Index}/{id?}"
+                pattern: "{controller=User}/{action=Login}/{id?}"
             );
 
             app.Run();

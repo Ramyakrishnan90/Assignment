@@ -1,4 +1,4 @@
-namespace MVCAssignments.Models
+namespace MVCAssignmentThree.Models
 {
     public class ErrorViewModel
     {
